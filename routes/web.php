@@ -3,6 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use App\Models\Post;
 use App\Http\Controllers\TaskController;
+use Illuminate\Support\Facades\File;
+use Spatie\YamlFrontMatter\YamlFrontMatter;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -15,17 +18,17 @@ use App\Http\Controllers\TaskController;
 */
 
 Route::get('/', function () {
-    $posts = Post::all();
 
     return view('posts', [
-        'posts' => $posts
+        'posts' => Post::all()
     ]);
 });
 
 Route::get('posts/{post}', function ($slug) {
 
     // Find a post by its slug and pass it to a view called "post"
+
     return view('post', [
-        'post' => Post::find($slug)
+        'post' => Post::findOrFail($slug)
     ]);
-})->where('post', '[A-z,\-]+');
+});
