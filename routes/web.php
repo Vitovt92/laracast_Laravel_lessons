@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Models\Post;
 use App\Http\Controllers\TaskController;
+use App\Models\Category;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Spatie\YamlFrontMatter\YamlFrontMatter;
 
@@ -20,15 +22,18 @@ use Spatie\YamlFrontMatter\YamlFrontMatter;
 Route::get('/', function () {
 
     return view('posts', [
-        'posts' => Post::all()
+        'posts' => Post::with("category")->get()
     ]);
 });
 
-Route::get('posts/{post}', function ($slug) {
-
-    // Find a post by its slug and pass it to a view called "post"
-
+Route::get('posts/{post:slug}', function (Post $post) {
     return view('post', [
-        'post' => Post::findOrFail($slug)
+        'post' => $post
+    ]);
+});
+
+Route::get('category/{category:slug}', function (Category $category) {
+    return view('posts', [
+        'posts' => $category->post
     ]);
 });
