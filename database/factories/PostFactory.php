@@ -28,8 +28,8 @@ class PostFactory extends Factory
             "user_id" => User::factory(),
             "title" => $this->faker->sentence,
             "slug" => $this->faker->slug,
-            "excerpt" => $this->faker->sentence,
-            "body" => $this->faker->paragraph,
+            "excerpt" => '<p>' . implode('</p><p>',$this->faker->paragraphs(2)) . "</p>",
+            "body" => '<p>' . implode('</p><p>',$this->faker->paragraphs(7)) . "</p>",
             "published_at" => $this->faker->date
 
         ];
