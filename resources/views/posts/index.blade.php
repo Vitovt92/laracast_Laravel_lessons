@@ -15,10 +15,12 @@
                 @endforeach
         </div>
         @endif
-    </main>
+
+        {{ $posts->links() }}
 
     @else
         No posts yet
     @endif
+    </main>
 
 </x-layout>
