@@ -12,7 +12,7 @@ use App\Models\Category;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Spatie\YamlFrontMatter\YamlFrontMatter;
-
+use MailchimpMarketing;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -23,6 +23,22 @@ use Spatie\YamlFrontMatter\YamlFrontMatter;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::get('ping', function(){
+
+$mailchimp = new \MailchimpMarketing\ApiClient();
+
+$mailchimp->setConfig([
+	'apiKey' => config('services.mailchimp.key'),
+	'server' => 'us20'
+]);
+
+$response = $mailchimp->lists->addListMember('f41dc0ff8b', [
+    'email_address' => "Hello@gmail.com",
+    'status' => 'subscribed'
+]);
+ddd($response);
+
+});
 
 Route::get('/', [PostController::class, "index"])->name('home');
 Route::get('posts/{post:slug}', [PostController::class, "show"]);
