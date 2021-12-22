@@ -19,7 +19,7 @@ class AdminsOnly
     public function handle(Request $request, Closure $next)
     {
 
-        if(auth()->user()?->username !== "vitovt"){
+        if(auth()->user()?->username !== "vitovt02"){
             abort(HttpFoundationResponse::HTTP_FORBIDDEN);
         }
 
