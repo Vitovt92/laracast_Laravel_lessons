@@ -7,6 +7,18 @@ use Illuminate\Validation\Rule as ValidationRule;
 
 class AdminPostController extends Controller
 {
+    private function validatePost(?Post $post = null){
+        $post ??= new Post();
+        return request()->validate([
+            'title' => 'required',
+            'slug' => ['required', ValidationRule::unique('posts', 'slug')->ignore($post->id)],
+            'thumbnail' => $post->exists ? ['image'] : ['required', 'image'],
+            'excerpt' => 'required',
+            'body' => 'required',
+            'category_id' => ['required', ValidationRule::exists('categories', 'id')],
+        ]);
+    }
+
     public function index()
     {
         return view('admin.posts.index', [
@@ -19,17 +31,11 @@ class AdminPostController extends Controller
     }
 
     public function store(){
-        $attributes = request()->validate([
-            'title' => 'required',
-            'slug' => ['required', ValidationRule::unique('posts', 'slug')],
-            'thumbnail' => 'required|image',
-            'excerpt' => 'required',
-            'body' => 'required',
-            'category_id' => ['required', ValidationRule::exists('categories', 'id')],
-        ]);
 
-        $attributes['user_id'] = auth()->id();
-        $attributes['thumbnail'] = request()->file('thumbnail')->store('thumbnails');
+        $attributes = array_merge($this->validatePost(), [
+            'user_id' => auth()->id(),
+            'thumbnail' => request()->file('thumbnail')->store('thumbnails')
+        ]);
 
         Post::create($attributes);
 
@@ -41,16 +47,9 @@ class AdminPostController extends Controller
     }
 
     public function update(Post $post){
-        $attributes = request()->validate([
-            'title' => 'required',
-            'slug' => ['required', ValidationRule::unique('posts', 'slug')->ignore($post->id)],
-            'thumbnail' => 'image',
-            'excerpt' => 'required',
-            'body' => 'required',
-            'category_id' => ['required', ValidationRule::exists('categories', 'id')],
-        ]);
+        $attributes = $this->validatePost($post);
 
-        if (isset($attributes['thumbnail'])){
+        if ($attributes['thumbnail'] ?? false){
             $attributes['thumbnail'] = request()->file('thumbnail')->store('thumbnails');
         }
 
